@@ -5,11 +5,14 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
+import * as bcrypt from 'bcryptjs';
 import { AddressDto, UserGender } from '../dtos/user.dto';
 
 @Entity({ name: 'users' })
+@Unique(['email'])
 export class UserEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -30,22 +33,23 @@ export class UserEntity extends BaseEntity {
   })
   gender: UserGender;
 
-  @Column()
-  @Exclude()
+  @Column({ select: false })
   password: string;
 
-  @Column()
-  @Exclude()
+  @Column({ select: false })
   salt: string;
 
   @Column({ type: 'jsonb' })
   address: AddressDto;
 
-  @CreateDateColumn()
-  @Exclude()
+  @CreateDateColumn({ select: false })
   createdAt: string;
 
-  @UpdateDateColumn()
-  @Exclude()
+  @UpdateDateColumn({ select: false })
   updatedAt: string;
+
+  async validatePassword(password: string) {
+    const hashedPassword = await bcrypt.hash(password, this.salt);
+    return hashedPassword === this.password;
+  }
 }
