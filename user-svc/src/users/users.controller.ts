@@ -1,5 +1,6 @@
+import { TransformInterceptor } from './../interceptors/transform.interceptor';
 import { UsersService } from './users.service';
-import { UserDto } from './dtos/user.dto';
+import { UserDto, PaginatedQueryDto } from './dtos/user.dto';
 import {
   Body,
   Controller,
@@ -7,6 +8,8 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
+  UseInterceptors,
 } from '@nestjs/common';
 
 @Controller('users')
@@ -16,6 +19,12 @@ export class UsersController {
   @Post()
   async signUp(@Body() user: UserDto) {
     return await this.service.signUp(user);
+  }
+
+  @Get()
+  @UseInterceptors(TransformInterceptor)
+  async find(@Query() query: PaginatedQueryDto) {
+    return await this.service.find(query);
   }
 
   @Get(':id')

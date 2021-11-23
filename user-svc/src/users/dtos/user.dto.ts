@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsEnum,
+  IsInt,
   IsObject,
   IsOptional,
   IsString,
@@ -72,4 +73,14 @@ export class UserDto {
   @ValidateNested()
   @Type(() => AddressDto)
   address: AddressDto;
+}
+
+export class PaginatedQueryDto {
+  @IsInt()
+  @Type(() => Number)
+  limit: number;
+
+  @IsInt()
+  @Type(() => Number)
+  page: number;
 }
