@@ -12,7 +12,11 @@ export class UsersService {
   ) {}
 
   async signUp(user: UserDto) {
-    return await this.repository.createUser(user);
+    const { id, email } = await this.repository.createUser(user);
+    return {
+      id,
+      email,
+    };
   }
 
   async find(query: PaginatedQueryDto) {
