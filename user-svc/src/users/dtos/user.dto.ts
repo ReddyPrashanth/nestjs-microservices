@@ -2,8 +2,10 @@ import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsEnum,
+  IsInt,
   IsObject,
   IsOptional,
+  IsString,
   Length,
   Matches,
   ValidateNested,
@@ -13,6 +15,15 @@ export enum UserGender {
   MALE = 'male',
   FEMALE = 'female',
   OTHER = 'other',
+}
+
+export class AuthCredentialsDto {
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  @Length(7, 20)
+  password: string;
 }
 
 export class AddressDto {

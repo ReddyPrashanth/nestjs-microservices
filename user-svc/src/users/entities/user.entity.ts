@@ -1,15 +1,21 @@
-import { Exclude } from 'class-transformer';
+import { RoleEntity } from './../../roles/entities/role.entity';
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
+import * as bcrypt from 'bcryptjs';
 import { AddressDto, UserGender } from '../dtos/user.dto';
+import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'users' })
+@Unique(['email'])
 export class UserEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -41,11 +47,21 @@ export class UserEntity extends BaseEntity {
   @Column({ type: 'jsonb' })
   address: AddressDto;
 
-  @CreateDateColumn()
-  @Exclude()
+  @ManyToMany(() => RoleEntity, (role) => role.users, {
+    primary: true,
+    cascade: true,
+  })
+  @JoinTable()
+  roles: RoleEntity[];
+
+  @CreateDateColumn({ select: false })
   createdAt: string;
 
-  @UpdateDateColumn()
-  @Exclude()
+  @UpdateDateColumn({ select: false })
   updatedAt: string;
+
+  async validatePassword(password: string) {
+    const hashedPassword = await bcrypt.hash(password, this.salt);
+    return hashedPassword === this.password;
+  }
 }

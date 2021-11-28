@@ -7,6 +7,9 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './database/database.module';
 import { APP_FILTER } from '@nestjs/core';
+import { AuthModule } from './auth/auth.module';
+import { RolesModule } from './roles/roles.module';
+import { PermissionsModule } from './permissions/permissions.module';
 
 @Module({
   imports: [
@@ -20,8 +23,13 @@ import { APP_FILTER } from '@nestjs/core';
         POSTGRES_PASSWORD: joi.string().required(),
         POSTGRES_DB: joi.string().required(),
         APP_PORT: joi.number(),
+        JWT_SECRET: joi.string().required(),
+        JWT_EXPIRATION_TIME: joi.string().required(),
       }),
     }),
+    AuthModule,
+    RolesModule,
+    PermissionsModule,
   ],
   controllers: [AppController],
   providers: [
