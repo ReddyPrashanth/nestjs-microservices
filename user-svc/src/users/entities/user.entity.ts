@@ -1,8 +1,11 @@
+import { RoleEntity } from './../../roles/entities/role.entity';
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn,
@@ -43,6 +46,13 @@ export class UserEntity extends BaseEntity {
 
   @Column({ type: 'jsonb' })
   address: AddressDto;
+
+  @ManyToMany(() => RoleEntity, (role) => role.users, {
+    primary: true,
+    cascade: true,
+  })
+  @JoinTable()
+  roles: RoleEntity[];
 
   @CreateDateColumn({ select: false })
   createdAt: string;
