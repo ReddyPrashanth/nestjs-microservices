@@ -1,6 +1,5 @@
 import { TransformInterceptor } from './../interceptors/transform.interceptor';
 import { UsersService } from './users.service';
-import { PaginatedQueryDto } from './dtos/user.dto';
 import {
   ClassSerializerInterceptor,
   Controller,
@@ -10,6 +9,7 @@ import {
   Query,
   UseInterceptors,
 } from '@nestjs/common';
+import { PaginatedQueryDto } from 'src/dtos/base.dto';
 
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)

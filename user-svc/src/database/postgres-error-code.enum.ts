@@ -1,3 +1,3 @@
 export enum PostgresErrorCode {
-    UNIQUE_KEY_VIOLATION = '23505'
+  UNIQUE_KEY_VIOLATION = '23505',
 }

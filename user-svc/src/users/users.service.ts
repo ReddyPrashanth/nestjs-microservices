@@ -1,12 +1,9 @@
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
-import {
-  UserDto,
-  PaginatedQueryDto,
-  AuthCredentialsDto,
-} from './dtos/user.dto';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { UserDto, AuthCredentialsDto } from './dtos/user.dto';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntityRepository } from './repositories/user.repository';
+import { PaginatedQueryDto } from 'src/dtos/base.dto';
 
 @Injectable()
 export class UsersService {
