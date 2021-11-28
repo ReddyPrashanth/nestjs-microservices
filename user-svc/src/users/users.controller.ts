@@ -1,25 +1,20 @@
 import { TransformInterceptor } from './../interceptors/transform.interceptor';
 import { UsersService } from './users.service';
-import { UserDto, PaginatedQueryDto } from './dtos/user.dto';
+import { PaginatedQueryDto } from './dtos/user.dto';
 import {
-  Body,
+  ClassSerializerInterceptor,
   Controller,
   Get,
   Param,
   ParseIntPipe,
-  Post,
   Query,
   UseInterceptors,
 } from '@nestjs/common';
 
 @Controller('users')
+@UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
   constructor(private readonly service: UsersService) {}
-
-  @Post()
-  async signUp(@Body() user: UserDto) {
-    return await this.service.signUp(user);
-  }
 
   @Get()
   @UseInterceptors(TransformInterceptor)

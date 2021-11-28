@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { AddressDto, UserGender } from '../dtos/user.dto';
+import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'users' })
 @Unique(['email'])
@@ -32,10 +33,12 @@ export class UserEntity extends BaseEntity {
   })
   gender: UserGender;
 
-  @Column({ select: false })
+  @Column()
+  @Exclude()
   password: string;
 
-  @Column({ select: false })
+  @Column()
+  @Exclude()
   salt: string;
 
   @Column({ type: 'jsonb' })

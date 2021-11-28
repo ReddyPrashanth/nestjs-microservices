@@ -1,6 +1,10 @@
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
-import { UserDto, PaginatedQueryDto } from './dtos/user.dto';
-import { Injectable } from '@nestjs/common';
+import {
+  UserDto,
+  PaginatedQueryDto,
+  AuthCredentialsDto,
+} from './dtos/user.dto';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntityRepository } from './repositories/user.repository';
 
@@ -11,12 +15,16 @@ export class UsersService {
     private readonly repository: UserEntityRepository,
   ) {}
 
-  async signUp(user: UserDto) {
+  async createUser(user: UserDto) {
     const { id, email } = await this.repository.createUser(user);
     return {
       id,
       email,
     };
+  }
+
+  async authenticateUser(credentials: AuthCredentialsDto) {
+    return await this.repository.authenticateUser(credentials);
   }
 
   async find(query: PaginatedQueryDto) {

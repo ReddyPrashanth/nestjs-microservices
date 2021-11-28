@@ -1,7 +1,11 @@
 import { AuthCredentialsDto, UserDto } from './../dtos/user.dto';
 import { EntityRepository, Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PostgresErrorCode } from 'src/database/postgres-error-code.enum';
 import { UserEntity } from '../entities/user.entity';
 
@@ -31,11 +35,8 @@ export class UserEntityRepository extends Repository<UserEntity> {
   async authenticateUser(authCredentials: AuthCredentialsDto) {
     const { email, password } = authCredentials;
     const user = await this.findOne({ email });
-    if (user && (await user.validatePassword(password))) {
-      return user;
-    } else {
-      null;
-    }
+    if (user && (await user.validatePassword(password))) return user;
+    throw new UnauthorizedException('Incorrect user credentials');
   }
 
   async hashPassword(password: string, salt: string): Promise<string> {
