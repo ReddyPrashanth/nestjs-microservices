@@ -1,4 +1,4 @@
-import { RoleDto } from './dtos/role.dto';
+import { RoleDto, RolePermissionDto } from './dtos/role.dto';
 import { RolesService } from './roles.service';
 import {
   Controller,
@@ -30,5 +30,16 @@ export class RolesController {
   @UseInterceptors(TransformInterceptor)
   async find(@Query() query: PaginatedQueryDto) {
     return await this.rolesService.find(query);
+  }
+
+  @Post(':id/permissions')
+  async attachPermissions(
+    @Param('id') roleId: number,
+    @Body() rolePermissionDto: RolePermissionDto,
+  ) {
+    return await this.rolesService.attachPermissions(
+      roleId,
+      rolePermissionDto.permissions,
+    );
   }
 }

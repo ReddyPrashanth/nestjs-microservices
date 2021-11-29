@@ -31,4 +31,9 @@ export class PermissionsController {
   async find(@Query() query: PaginatedQueryDto) {
     return await this.permissionService.find(query);
   }
+
+  @Get('role/:id')
+  async getAttachablePermissions(@Param('id') roleId: number) {
+    return await this.permissionService.attachablePermissionsForARole(roleId);
+  }
 }
