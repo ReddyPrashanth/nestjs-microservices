@@ -13,6 +13,8 @@ import {
   Get,
 } from '@nestjs/common';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import PermissionsGuard from './guards/permission.guard';
+import UsersPermission from './permissions/users-permission.enum';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -39,7 +41,9 @@ export class AuthController {
   }
 
   @Get('me')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(
+    PermissionsGuard(UsersPermission.CREATE_USER, UsersPermission.DELETE_USER),
+  )
   async authenticate(@Request() request: IRequestWithUser) {
     return request.user;
   }

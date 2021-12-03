@@ -50,6 +50,7 @@ export class UserEntity extends BaseEntity {
   @ManyToMany(() => RoleEntity, (role) => role.users, {
     primary: true,
     cascade: true,
+    eager: true,
   })
   @JoinTable()
   roles: RoleEntity[];
