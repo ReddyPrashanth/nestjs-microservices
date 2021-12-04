@@ -14,6 +14,7 @@ const PermissionsGuard = (...permissions: Permission[]): Type<CanActivate> => {
     async canActivate(context: ExecutionContext) {
       await super.canActivate(context);
       const request = context.switchToHttp().getRequest<IRequestWithUser>();
+      console.log(request.cookies);
       const { user } = request;
       let userPermissions = [];
       user.roles.forEach((role) => {
