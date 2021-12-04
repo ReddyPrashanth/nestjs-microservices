@@ -21,7 +21,7 @@ jobs:
       - name: install dependencies
         working-directory: user-svc
         run: |
-          npm run install
+          npm install
       - name: build
         working-directory: user-svc
         run: |
