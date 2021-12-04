@@ -8,7 +8,7 @@ import {
   HttpStatus,
   NotFoundException,
 } from '@nestjs/common';
-import { RoleEntity } from './entities/role.entity';
+import { RoleEntity, RolePermissionEntity } from './entities/role.entity';
 import { RoleDto } from './dtos/role.dto';
 import { PaginatedQueryDto } from 'src/dtos/base.dto';
 
@@ -17,6 +17,8 @@ export class RolesService {
   constructor(
     @InjectRepository(RoleEntity)
     private readonly repository: Repository<RoleEntity>,
+    @InjectRepository(RolePermissionEntity)
+    private readonly rolePermissionRepository: Repository<RolePermissionEntity>,
   ) {}
 
   async createUserRole(roleDto: RoleDto) {
@@ -52,5 +54,32 @@ export class RolesService {
       total,
       query,
     };
+  }
+
+  async attachPermissions(roleId: number, permissionIds: number[]) {
+    const entities = permissionIds.map((pid) => {
+      return {
+        rolesId: roleId,
+        permissionsId: pid,
+      };
+    });
+    try {
+      const { identifiers } = await this.rolePermissionRepository
+        .createQueryBuilder()
+        .insert()
+        .into(RolePermissionEntity)
+        .values(entities)
+        .orIgnore()
+        .execute();
+      return identifiers;
+    } catch (error) {
+      console.log(error);
+      if (error?.code === PostgresErrorCode.FOREIGN_KEY_VIOLATION)
+        throw new BadRequestException(error?.detail);
+      throw new HttpException(
+        'Something went wrong. Failed to attach permissions',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

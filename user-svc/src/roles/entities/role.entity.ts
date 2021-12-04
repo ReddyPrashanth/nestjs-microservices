@@ -7,6 +7,7 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  PrimaryColumn,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
@@ -34,7 +35,17 @@ export class RoleEntity extends BaseEntity {
   @ManyToMany(() => PermissionEntity, (permission) => permission.roles, {
     primary: true,
     cascade: true,
+    eager: true,
   })
   @JoinTable()
   permissions: PermissionEntity[];
+}
+
+@Entity('roles_permissions_permissions')
+export class RolePermissionEntity extends BaseEntity {
+  @PrimaryColumn({ type: 'int' })
+  rolesId: number;
+
+  @PrimaryColumn({ type: 'int' })
+  permissionsId: number;
 }

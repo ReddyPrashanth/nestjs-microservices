@@ -1,4 +1,4 @@
-import { IsString, Length } from 'class-validator';
+import { IsNumber, IsString, Length } from 'class-validator';
 
 export class RoleDto {
   @IsString()
@@ -7,4 +7,9 @@ export class RoleDto {
 
   @IsString()
   description: string;
+}
+
+export class RolePermissionDto {
+  @IsNumber({}, { each: true })
+  permissions: number[];
 }

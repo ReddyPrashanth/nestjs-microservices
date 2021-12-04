@@ -2,7 +2,6 @@ import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsEnum,
-  IsInt,
   IsObject,
   IsOptional,
   IsString,
@@ -61,7 +60,7 @@ export class UserDto {
 
   @Length(3, 25)
   @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-    message: 'Password too weak',
+    message: 'password too weak',
   })
   password: string;
 

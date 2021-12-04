@@ -1,3 +1,4 @@
+import { RolePermissionEntity } from './../roles/entities/role.entity';
 import { PostgresErrorCode } from 'src/database/postgres-error-code.enum';
 import { PermissionDto } from './dtos/permission.dto';
 import { Repository } from 'typeorm';
@@ -52,5 +53,22 @@ export class PermissionsService {
       total,
       query,
     };
+  }
+
+  async attachablePermissionsForARole(roleId: number) {
+    const data = await this.repository
+      .createQueryBuilder('permission')
+      .where((qb) => {
+        const subQuery = qb
+          .subQuery()
+          .select('rpp."permissionsId"')
+          .from(RolePermissionEntity, 'rpp')
+          .where('rpp."rolesId" = :rolesId')
+          .getQuery();
+        return 'permission.id NOT IN' + subQuery;
+      })
+      .setParameter('rolesId', roleId)
+      .getMany();
+    return data;
   }
 }
