@@ -3,11 +3,10 @@ name: Build, test and push microservices image to docker hub
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 env:
   IMAGE: microservices-user-service
+  CONTAINER: ps-usr-svc
 
 jobs:
 
@@ -81,12 +80,12 @@ jobs:
       - name: stop running container
         continue-on-error: true
         run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker stop ${{ env.IMAGE }}"
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker stop ${{ env.CONTAINER }}"
 
       - name: remove stopped container
         continue-on-error: true
-        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker rm ${{ env.IMAGE }}"
+        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker rm ${{ env.CONTAINER }}"
       
       - name: start latest tag
         run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker run -d -p 80:3000 --env-file ~/app/.env --name ps-usr-svc ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE }}"
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker run -d -p 80:3000 --env-file ~/app/.env --name ${{ env.CONTAINER }} ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE }}"
