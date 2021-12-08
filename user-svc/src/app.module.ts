@@ -7,7 +7,6 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './database/database.module';
 import { APP_FILTER } from '@nestjs/core';
-import { AuthModule } from './auth/auth.module';
 import { RolesModule } from './roles/roles.module';
 import { PermissionsModule } from './permissions/permissions.module';
 
@@ -27,7 +26,6 @@ import { PermissionsModule } from './permissions/permissions.module';
         JWT_EXPIRATION_TIME: joi.string().required(),
       }),
     }),
-    AuthModule,
     RolesModule,
     PermissionsModule,
   ],

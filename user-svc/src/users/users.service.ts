@@ -1,6 +1,6 @@
-import { UserNotFoundException } from './exceptions/user-not-found.exception';
+import { RpcException } from '@nestjs/microservices';
 import { UserDto, AuthCredentialsDto } from './dtos/user.dto';
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntityRepository } from './repositories/user.repository';
 import { PaginatedQueryDto } from 'src/dtos/base.dto';
@@ -43,6 +43,9 @@ export class UsersService {
     if (user) {
       return user;
     }
-    throw new UserNotFoundException(id);
+    throw new RpcException({
+      status: HttpStatus.NOT_FOUND,
+      message: `User with id ${id} not found`,
+    });
   }
 }
