@@ -1,3 +1,4 @@
+import { PermissionEntity } from 'src/permissions/entities/permission.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
 
 export class RoleEntity {
@@ -11,7 +12,7 @@ export class RoleEntity {
 
   users: UserEntity[];
 
-  //   permissions: PermissionEntity[];
+  permissions: PermissionEntity[];
 }
 
 export class RolePermissionEntity {

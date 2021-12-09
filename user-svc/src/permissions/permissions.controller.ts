@@ -19,7 +19,6 @@ export class PermissionsController {
   }
 
   @MessagePattern({ cmd: 'find_permissions' })
-  // @UseInterceptors(TransformInterceptor)
   async find(@Payload() query: PaginatedQueryDto) {
     return await this.permissionService.find(query);
   }

@@ -1,14 +1,9 @@
+import { RpcException } from '@nestjs/microservices';
 import { RolePermissionEntity } from './../roles/entities/role.entity';
 import { PostgresErrorCode } from 'src/database/postgres-error-code.enum';
 import { PermissionDto } from './dtos/permission.dto';
 import { Repository } from 'typeorm';
-import {
-  Injectable,
-  BadRequestException,
-  HttpException,
-  HttpStatus,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { PermissionEntity } from './entities/permission.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginatedQueryDto } from 'src/dtos/base.dto';
@@ -27,18 +22,24 @@ export class PermissionsService {
     } catch (error) {
       const { name } = permissionDto;
       if (error?.code === PostgresErrorCode.UNIQUE_KEY_VIOLATION)
-        throw new BadRequestException(`Permission ${name} is taken.`);
-      throw new HttpException(
-        `Something went wrong. Failed to create permission ${name}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+        throw new RpcException({
+          status: HttpStatus.BAD_REQUEST,
+          message: `Permission ${name} is taken.`,
+        });
+      throw new RpcException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: `Something went wrong. Failed to create permission ${name}`,
+      });
     }
   }
 
   async findById(id: number) {
     const permission = await this.repository.findOne(id);
     if (permission) return permission;
-    throw new NotFoundException(`Permission with id ${id} not found`);
+    throw new RpcException({
+      status: HttpStatus.NOT_FOUND,
+      message: `Permission with id ${id} not found`,
+    });
   }
 
   async find(query: PaginatedQueryDto) {
