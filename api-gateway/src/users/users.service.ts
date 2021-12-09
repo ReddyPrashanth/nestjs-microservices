@@ -1,7 +1,12 @@
 import { RpcExceptionResponseDto, PaginatedQueryDto } from './../dtos/base.dto';
 import { ClientProxy } from '@nestjs/microservices';
 import { UserDto, AuthCredentialsDto } from './dtos/user.dto';
-import { Inject, Injectable, HttpException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  HttpException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { catchError } from 'rxjs';
 import { UserEntity } from './entities/user.entity';
 
@@ -17,19 +22,19 @@ export class UsersService {
     );
   }
 
-  async authenticateUser(credentials: AuthCredentialsDto) {
-    return {
-      id: 1,
-      email: credentials.email,
-      lastName: 'psreepathi',
-      firstName: 'prashanth',
-    };
+  authenticateUser(credentials: AuthCredentialsDto) {
+    return this.client.send<UserEntity>({ cmd: 'sign_in' }, credentials).pipe(
+      catchError((err: RpcExceptionResponseDto) => {
+        throw new HttpException(err.message, err.status);
+      }),
+    );
   }
 
   findById(id: number) {
     return this.client.send<UserEntity>({ cmd: 'find_user' }, id).pipe(
       catchError((err: RpcExceptionResponseDto) => {
-        throw new HttpException(err.message, err.status);
+        console.log(err);
+        throw new UnauthorizedException(err.message);
       }),
     );
   }

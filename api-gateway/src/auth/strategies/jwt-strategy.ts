@@ -6,7 +6,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Request } from 'express';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { Injectable } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -24,8 +24,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  validate(payload: ITokenPayload): Observable<UserEntity> {
+  async validate(payload: ITokenPayload): Promise<UserEntity> {
     const { userId } = payload;
-    return this.usersService.findById(userId);
+    const user$ = this.usersService.findById(userId);
+    return await firstValueFrom(user$);
   }
 }

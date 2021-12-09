@@ -17,8 +17,8 @@ export class AuthService {
     return await this.usersService.createUser(userDto);
   }
 
-  async signIn(credentials: AuthCredentialsDto) {
-    return await this.usersService.authenticateUser(credentials);
+  signIn(credentials: AuthCredentialsDto) {
+    return this.usersService.authenticateUser(credentials);
   }
 
   getCookieWithJwtToken(userId: number) {

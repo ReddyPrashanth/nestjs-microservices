@@ -13,11 +13,15 @@ import {
   Get,
 } from '@nestjs/common';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   @Post('signup')
   async signUp(@Body() userDto: UserDto) {
@@ -28,6 +32,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   async signIn(@Request() request: IRequestWithUser) {
     const user = request.user;
+    console.log(user);
     const cookie = this.authService.getCookieWithJwtToken(user.id);
     request.res.setHeader('Set-Cookie', cookie);
     return user;
@@ -39,7 +44,7 @@ export class AuthController {
   }
 
   @Get('me')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async authenticate(@Request() request: IRequestWithUser) {
     return request.user;
   }

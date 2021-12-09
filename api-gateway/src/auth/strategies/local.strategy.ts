@@ -1,3 +1,4 @@
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from './../auth.service';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
@@ -11,6 +12,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(email: string, password: string): Promise<UserEntity> {
-    return await this.authService.signIn({ email, password });
+    const user$ = this.authService.signIn({ email, password });
+    return await firstValueFrom(user$);
   }
 }
