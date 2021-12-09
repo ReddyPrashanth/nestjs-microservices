@@ -14,7 +14,6 @@ export class UsersController {
   constructor(private readonly service: UsersService) {}
 
   @MessagePattern({ cmd: 'find_users' })
-  // @UseInterceptors(TransformInterceptor)
   async find(@Payload() query: PaginatedQueryDto) {
     return await this.service.find(query);
   }
