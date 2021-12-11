@@ -1,5 +1,5 @@
 import { RpcException } from '@nestjs/microservices';
-import { UserDto, AuthCredentialsDto } from './dtos/user.dto';
+import { UserDto, AuthCredentialsDto, UploadProfileDto } from './dtos/user.dto';
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntityRepository } from './repositories/user.repository';
@@ -47,5 +47,9 @@ export class UsersService {
       status: HttpStatus.NOT_FOUND,
       message: `User with id ${id} not found`,
     });
+  }
+
+  async uploadProfile(dto: UploadProfileDto) {
+    return await this.repository.update({ id: dto.id }, dto);
   }
 }

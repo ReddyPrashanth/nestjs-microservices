@@ -1,4 +1,4 @@
-import { UserDto, AuthCredentialsDto } from './dtos/user.dto';
+import { UserDto, AuthCredentialsDto, UploadProfileDto } from './dtos/user.dto';
 import { UsersService } from './users.service';
 import {
   ClassSerializerInterceptor,
@@ -31,5 +31,10 @@ export class UsersController {
   @MessagePattern({ cmd: 'sign_in' })
   async signIn(@Payload() credentials: AuthCredentialsDto) {
     return await this.service.authenticateUser(credentials);
+  }
+
+  @MessagePattern({ cmd: 'upload_profile' })
+  async uploadProfile(@Payload() profile: UploadProfileDto) {
+    return await this.service.uploadProfile(profile);
   }
 }
