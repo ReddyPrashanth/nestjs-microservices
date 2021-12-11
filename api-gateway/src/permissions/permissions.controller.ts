@@ -31,4 +31,9 @@ export class PermissionsController {
   createPermission(@Body() dto: PermissionDto) {
     return this.service.create(dto);
   }
+
+  @Get('/role/:id')
+  getAttachablePermissions(@Param('id') id: number) {
+    return this.service.attachablePermissions(id);
+  }
 }

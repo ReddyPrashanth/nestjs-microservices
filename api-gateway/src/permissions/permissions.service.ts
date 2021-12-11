@@ -28,4 +28,8 @@ export class PermissionsService {
       }),
     );
   }
+
+  attachablePermissions(id: number) {
+    return this.client.send({ cmd: 'role_permissions' }, id);
+  }
 }

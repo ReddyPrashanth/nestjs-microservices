@@ -7,20 +7,16 @@ export class UserEntity {
 
   lastName: string;
 
+  avatarKey: string;
+
+  avatarLocation: string;
+
   // @Column({
   //   type: 'enum',
   //   enum: UserGender,
   //   default: UserGender.MALE,
   // })
   // gender: UserGender;
-
-  // @Column()
-  // @Exclude()
-  // password: string;
-
-  // @Column()
-  // @Exclude()
-  // salt: string;
 
   // @Column({ type: 'jsonb' })
   // address: AddressDto;

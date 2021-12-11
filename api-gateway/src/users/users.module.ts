@@ -1,3 +1,4 @@
+import { FilesModule } from './../files/files.module';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
@@ -5,7 +6,7 @@ import { UsersService } from './users.service';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 
 @Module({
-  imports: [ConfigModule],
+  imports: [ConfigModule, FilesModule],
   controllers: [UsersController],
   providers: [
     UsersService,

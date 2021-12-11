@@ -32,7 +32,6 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   async signIn(@Request() request: IRequestWithUser) {
     const user = request.user;
-    console.log(user);
     const cookie = this.authService.getCookieWithJwtToken(user.id);
     request.res.setHeader('Set-Cookie', cookie);
     return user;

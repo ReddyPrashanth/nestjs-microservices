@@ -10,6 +10,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './http-exception.filter';
 import { RolesModule } from './roles/roles.module';
 import { PermissionsModule } from './permissions/permissions.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -21,6 +22,8 @@ import { PermissionsModule } from './permissions/permissions.module';
         USER_SERVICE_PORT: joi.string().required(),
         JWT_SECRET: joi.string().required(),
         JWT_EXPIRATION_TIME: joi.string().required(),
+        AWS_REGION: joi.string().required(),
+        S3_BUCKET_NAME: joi.string().required(),
       }),
     }),
     MailModule,
@@ -28,6 +31,7 @@ import { PermissionsModule } from './permissions/permissions.module';
     AuthModule,
     RolesModule,
     PermissionsModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [
