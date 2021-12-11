@@ -8,7 +8,8 @@ export class HealthController {
 
   @Get()
   @HealthCheck()
-  check() {
-    return this.service.healthCheck();
+  async check() {
+    const data = await this.service.healthCheck();
+    return { data };
   }
 }
