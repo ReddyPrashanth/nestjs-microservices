@@ -11,6 +11,7 @@ import { HttpExceptionFilter } from './http-exception.filter';
 import { RolesModule } from './roles/roles.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { FilesModule } from './files/files.module';
+import { StoreModule } from './store/store.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { FilesModule } from './files/files.module';
     RolesModule,
     PermissionsModule,
     FilesModule,
+    StoreModule,
   ],
   controllers: [AppController],
   providers: [
