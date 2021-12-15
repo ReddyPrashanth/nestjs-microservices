@@ -1,3 +1,7 @@
+import { ProductsController } from './controllers/products.controller';
+import { productsService } from './services/products.service';
+import { SubCategoriesService } from './services/subcategories.service';
+import { SubCategoriesController } from './controllers/subcategories.controller';
 import { CategoriesService } from './services/categories.service';
 import { CategoriesController } from './controllers/categories.controller';
 import { Module } from '@nestjs/common';
@@ -6,9 +10,15 @@ import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [ConfigModule],
-  controllers: [CategoriesController],
+  controllers: [
+    CategoriesController,
+    SubCategoriesController,
+    ProductsController,
+  ],
   providers: [
     CategoriesService,
+    SubCategoriesService,
+    productsService,
     {
       provide: 'STORE_SERVICE',
       inject: [ConfigService],

@@ -1,3 +1,4 @@
+import { SubCategoriesDto } from './../dtos/subcategory.dto';
 import { CategoriesService } from './../services/categories.service';
 import { CategoryDto } from './../dtos/category.dto';
 import {
@@ -28,6 +29,19 @@ export class CategoriesController {
   @Post()
   create(@Body() dto: CategoryDto) {
     return this.service.createCategory(dto);
+  }
+
+  @Get('/:id/subcategories')
+  findSubCategories(@Param('id') id: number) {
+    return this.service.findSubCategories(id);
+  }
+
+  @Post('/:id/subcategories')
+  createSubCategories(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: SubCategoriesDto,
+  ) {
+    return this.service.createSubCategories(id, dto);
   }
 
   @Put(':id')
