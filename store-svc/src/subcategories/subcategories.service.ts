@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { SubCategoryEntity } from './entities/subcategory.entity';
+import { getUniqueViolationKey } from 'src/utils/database.utils';
 
 @Injectable()
 export class SubcategoriesService {
@@ -26,6 +27,10 @@ export class SubcategoriesService {
     });
   }
 
+  async findByCategory(categoryId: number) {
+    return await this.repository.find({ categoryId });
+  }
+
   async createSubCategory(dto: SubCategoryDto) {
     const subCategory = this.repository.create(dto);
     try {
@@ -35,6 +40,11 @@ export class SubcategoriesService {
         throw new RpcException({
           status: HttpStatus.BAD_REQUEST,
           message: `Sub category ${dto.name} is already taken`,
+        });
+      if (error?.code === PostgresErrorCode.FOREIGN_KEY_VIOLATION)
+        throw new RpcException({
+          status: HttpStatus.BAD_REQUEST,
+          message: error?.detail,
         });
       throw new RpcException({
         status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -48,10 +58,17 @@ export class SubcategoriesService {
     try {
       return await this.repository.save(subCategories);
     } catch (error) {
-      if (error?.code === PostgresErrorCode.UNIQUE_KEY_VIOLATION)
+      if (error?.code === PostgresErrorCode.UNIQUE_KEY_VIOLATION) {
+        const value = getUniqueViolationKey(error?.detail as string);
         throw new RpcException({
           status: HttpStatus.BAD_REQUEST,
-          message: 'Sub category is already taken',
+          message: `Sub category ${value} is taken`,
+        });
+      }
+      if (error?.code === PostgresErrorCode.FOREIGN_KEY_VIOLATION)
+        throw new RpcException({
+          status: HttpStatus.BAD_REQUEST,
+          message: error?.detail,
         });
       throw new RpcException({
         status: HttpStatus.INTERNAL_SERVER_ERROR,

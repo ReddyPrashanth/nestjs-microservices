@@ -9,12 +9,19 @@ export class SubcategoriesController {
 
   @MessagePattern({ cmd: 'find_sub_categories' })
   async find() {
-    return await this.service.find();
+    const data = await this.service.find();
+    return { data };
   }
 
   @MessagePattern({ cmd: 'find_sub_category' })
   async findById(@Payload() id: number) {
     return await this.service.findById(id);
+  }
+
+  @MessagePattern({ cmd: 'find_sub_categories_by_category' })
+  async findByCategory(@Payload() categoryId: number) {
+    const data = await this.service.findByCategory(categoryId);
+    return { data };
   }
 
   @MessagePattern({ cmd: 'create_sub_category' })

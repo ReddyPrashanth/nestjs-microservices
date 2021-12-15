@@ -1,3 +1,4 @@
+import { ProductEntity } from './../../products/entities/product.entity';
 import { CategoryEntity } from './../../categories/entities/category.entity';
 import {
   BaseEntity,
@@ -5,6 +6,7 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn,
@@ -35,4 +37,7 @@ export class SubCategoryEntity extends BaseEntity {
     onDelete: 'CASCADE',
   })
   category: CategoryEntity;
+
+  @OneToMany(() => ProductEntity, (product) => product.subCategory)
+  products: ProductEntity[];
 }

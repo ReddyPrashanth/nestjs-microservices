@@ -4,30 +4,41 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity({ name: 'categories' })
+@Entity({ name: 'products' })
 @Unique(['name'])
-export class CategoryEntity extends BaseEntity {
+export class ProductEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 20 })
+  @Column({ type: 'varchar', length: 40 })
   name: string;
 
   @Column({ type: 'text' })
   description: string;
 
+  @Column({ type: 'float' })
+  price: number;
+
+  @Column({ type: 'int' })
+  stock: number;
+
+  @Column({ type: 'int' })
+  subCategoryId: number;
+
   @CreateDateColumn({ select: false })
   createdAt: string;
 
   @UpdateDateColumn({ select: false })
-  updatedAt: string;
+  updateAt: string;
 
-  @OneToMany(() => SubCategoryEntity, (subCategory) => subCategory.category)
-  subCategories: SubCategoryEntity[];
+  @ManyToOne(() => SubCategoryEntity, (subCategory) => subCategory.products, {
+    onDelete: 'CASCADE',
+  })
+  subCategory: SubCategoryEntity;
 }
