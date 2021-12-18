@@ -2,7 +2,7 @@ name: Build, test and push api gateway image to dockerhub
 
 on:
   workflow_run:
-    workflows: ["Build, test and push user service image to dockerhub", "Build, test and push store service image to dockerhub"]
+    workflows: ["Build, test and push store service image to dockerhub"]
     types:
       - completed
 
