@@ -1,4 +1,4 @@
-name: Build, test and push microservices image to docker hub
+name: Build, test and push user service image to dockerhub
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 env:
   IMAGE: microservices-user-service
-  CONTAINER: ps-usr-svc
+  CONTAINER: ps-user-svc
 
 jobs:
 
@@ -59,33 +59,33 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE }}:latest
 
-  deploy-to-aws:
-    needs: [push-to-docker-hub]
-    runs-on: ubuntu-latest
-    name: deploy to ec2 instance
+  # deploy-to-aws:
+  #   needs: [push-to-docker-hub]
+  #   runs-on: ubuntu-latest
+  #   name: deploy to ec2 instance
 
-    steps:
-      - name: setup SSH connection
-        uses: webfactory/ssh-agent@v0.5.1
-        with:
-          ssh-private-key: ${{ secrets.SSH_KEY }}
+  #   steps:
+  #     - name: setup SSH connection
+  #       uses: webfactory/ssh-agent@v0.5.1
+  #       with:
+  #         ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - name: adding known hosts
-        run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+  #     - name: adding known hosts
+  #       run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: pull latest docker image
-        run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE }}:latest"
+  #     - name: pull latest docker image
+  #       run: |
+  #         ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE }}:latest"
 
-      - name: stop running container
-        continue-on-error: true
-        run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker stop ${{ env.CONTAINER }}"
+  #     - name: stop running container
+  #       continue-on-error: true
+  #       run: |
+  #         ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker stop ${{ env.CONTAINER }}"
 
-      - name: remove stopped container
-        continue-on-error: true
-        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker rm ${{ env.CONTAINER }}"
+  #     - name: remove stopped container
+  #       continue-on-error: true
+  #       run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker rm ${{ env.CONTAINER }}"
       
-      - name: start latest tag
-        run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker run -d -p 80:3000 --env-file ~/app/.env --name ${{ env.CONTAINER }} ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE }}"
+  #     - name: start latest tag
+  #       run: |
+  #         ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker run -d -p 80:3000 --env-file ~/app/.env --name ${{ env.CONTAINER }} ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE }}"
