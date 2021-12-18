@@ -1,13 +1,8 @@
+import { RpcException } from '@nestjs/microservices';
 import { PostgresErrorCode } from 'src/database/postgres-error-code.enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import {
-  BadRequestException,
-  Injectable,
-  HttpException,
-  HttpStatus,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { RoleEntity, RolePermissionEntity } from './entities/role.entity';
 import { RoleDto } from './dtos/role.dto';
 import { PaginatedQueryDto } from 'src/dtos/base.dto';
@@ -28,18 +23,24 @@ export class RolesService {
     } catch (error) {
       const { name } = roleDto;
       if (error?.code === PostgresErrorCode.UNIQUE_KEY_VIOLATION)
-        throw new BadRequestException(`Role ${name} is taken`);
-      throw new HttpException(
-        `Something went wrong. Failed to create role ${name}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+        throw new RpcException({
+          status: HttpStatus.BAD_REQUEST,
+          message: `Role ${name} is taken`,
+        });
+      throw new RpcException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: `Something went wrong. Failed to create role ${name}`,
+      });
     }
   }
 
   async findById(id: number) {
     const role = await this.repository.findOne(id);
     if (role) return role;
-    throw new NotFoundException(`Role with id ${id} not found`);
+    throw new RpcException({
+      status: HttpStatus.NOT_FOUND,
+      message: `Role with id ${id} not found`,
+    });
   }
 
   async find(query: PaginatedQueryDto) {
@@ -75,11 +76,14 @@ export class RolesService {
     } catch (error) {
       console.log(error);
       if (error?.code === PostgresErrorCode.FOREIGN_KEY_VIOLATION)
-        throw new BadRequestException(error?.detail);
-      throw new HttpException(
-        'Something went wrong. Failed to attach permissions',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+        throw new RpcException({
+          status: HttpStatus.BAD_REQUEST,
+          message: error?.detail,
+        });
+      throw new RpcException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Something went wrong. Failed to attach permissions',
+      });
     }
   }
 }

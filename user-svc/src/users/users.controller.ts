@@ -1,29 +1,40 @@
-import { TransformInterceptor } from './../interceptors/transform.interceptor';
+import { UserDto, AuthCredentialsDto, UploadProfileDto } from './dtos/user.dto';
 import { UsersService } from './users.service';
 import {
   ClassSerializerInterceptor,
   Controller,
-  Get,
-  Param,
-  ParseIntPipe,
-  Query,
   UseInterceptors,
 } from '@nestjs/common';
 import { PaginatedQueryDto } from 'src/dtos/base.dto';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
   constructor(private readonly service: UsersService) {}
 
-  @Get()
-  @UseInterceptors(TransformInterceptor)
-  async find(@Query() query: PaginatedQueryDto) {
+  @MessagePattern({ cmd: 'find_users' })
+  async find(@Payload() query: PaginatedQueryDto) {
     return await this.service.find(query);
   }
 
-  @Get(':id')
-  async findById(@Param('id', ParseIntPipe) id: number) {
+  @MessagePattern({ cmd: 'find_user' })
+  async findById(@Payload() id: number) {
     return await this.service.findById(id);
+  }
+
+  @MessagePattern({ cmd: 'create_user' })
+  async createUser(@Payload() user: UserDto) {
+    return await this.service.createUser(user);
+  }
+
+  @MessagePattern({ cmd: 'sign_in' })
+  async signIn(@Payload() credentials: AuthCredentialsDto) {
+    return await this.service.authenticateUser(credentials);
+  }
+
+  @MessagePattern({ cmd: 'upload_profile' })
+  async uploadProfile(@Payload() profile: UploadProfileDto) {
+    return await this.service.uploadProfile(profile);
   }
 }

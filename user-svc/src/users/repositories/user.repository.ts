@@ -1,11 +1,8 @@
+import { RpcException } from '@nestjs/microservices';
 import { AuthCredentialsDto, UserDto } from './../dtos/user.dto';
 import { EntityRepository, Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
-import {
-  HttpException,
-  HttpStatus,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import { PostgresErrorCode } from 'src/database/postgres-error-code.enum';
 import { UserEntity } from '../entities/user.entity';
 
@@ -20,15 +17,15 @@ export class UserEntityRepository extends Repository<UserEntity> {
       return await entity.save();
     } catch (error) {
       if (error?.code === PostgresErrorCode.UNIQUE_KEY_VIOLATION) {
-        throw new HttpException(
-          `Email address ${email} is taken`,
-          HttpStatus.BAD_REQUEST,
-        );
+        throw new RpcException({
+          status: HttpStatus.BAD_REQUEST,
+          message: `Email ${email} is taken`,
+        });
       }
-      throw new HttpException(
-        'Something went wrong',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new RpcException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Something went wrong',
+      });
     }
   }
 
@@ -36,7 +33,10 @@ export class UserEntityRepository extends Repository<UserEntity> {
     const { email, password } = authCredentials;
     const user = await this.findOne({ email });
     if (user && (await user.validatePassword(password))) return user;
-    throw new UnauthorizedException('Incorrect user credentials');
+    throw new RpcException({
+      status: HttpStatus.UNAUTHORIZED,
+      message: 'Incorrect user credentials',
+    });
   }
 
   async hashPassword(password: string, salt: string): Promise<string> {

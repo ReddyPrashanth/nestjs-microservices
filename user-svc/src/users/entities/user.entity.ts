@@ -47,6 +47,12 @@ export class UserEntity extends BaseEntity {
   @Column({ type: 'jsonb' })
   address: AddressDto;
 
+  @Column({ type: 'varchar', nullable: true })
+  avatarLocation: string;
+
+  @Column({ type: 'varchar', nullable: true, length: 100 })
+  avatarKey: string;
+
   @ManyToMany(() => RoleEntity, (role) => role.users, {
     primary: true,
     cascade: true,

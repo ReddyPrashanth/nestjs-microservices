@@ -1,45 +1,30 @@
-import { RoleDto, RolePermissionDto } from './dtos/role.dto';
+import { MessagePattern, Payload } from '@nestjs/microservices';
+import { RoleDto, AttachPermissionsDto } from './dtos/role.dto';
 import { RolesService } from './roles.service';
-import {
-  Controller,
-  Post,
-  Body,
-  Param,
-  Get,
-  UseInterceptors,
-  Query,
-} from '@nestjs/common';
-import { TransformInterceptor } from 'src/interceptors/transform.interceptor';
+import { Controller } from '@nestjs/common';
 import { PaginatedQueryDto } from 'src/dtos/base.dto';
 
 @Controller('roles')
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
-  @Post()
-  async createUserRole(@Body() roleDto: RoleDto) {
+  @MessagePattern({ cmd: 'create_role' })
+  async createUserRole(@Payload() roleDto: RoleDto) {
     return await this.rolesService.createUserRole(roleDto);
   }
 
-  @Get(':id')
-  async findById(@Param('id') id: number) {
+  @MessagePattern({ cmd: 'find_role' })
+  async findById(@Payload() id: number) {
     return await this.rolesService.findById(id);
   }
 
-  @Get()
-  @UseInterceptors(TransformInterceptor)
-  async find(@Query() query: PaginatedQueryDto) {
+  @MessagePattern({ cmd: 'find_roles' })
+  async find(@Payload() query: PaginatedQueryDto) {
     return await this.rolesService.find(query);
   }
 
-  @Post(':id/permissions')
-  async attachPermissions(
-    @Param('id') roleId: number,
-    @Body() rolePermissionDto: RolePermissionDto,
-  ) {
-    return await this.rolesService.attachPermissions(
-      roleId,
-      rolePermissionDto.permissions,
-    );
+  @MessagePattern({ cmd: 'attach_permissions' })
+  async attachPermissions(@Payload() dto: AttachPermissionsDto) {
+    return await this.rolesService.attachPermissions(dto.id, dto.permissions);
   }
 }

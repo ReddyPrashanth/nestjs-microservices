@@ -73,3 +73,11 @@ export class UserDto {
   @Type(() => AddressDto)
   address: AddressDto;
 }
+
+export class UploadProfileDto {
+  id: number;
+
+  avatarLocation: string;
+
+  avatarKey: string;
+}
