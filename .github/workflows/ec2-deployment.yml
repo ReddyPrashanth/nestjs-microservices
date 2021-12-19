@@ -76,4 +76,4 @@ jobs:
 
       - name: start nginx as a docker container
         run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker run -d -p 80:80 --network=microservices -v /home/ubuntu/app/nginx:/etc/nginx/conf.d --restart=unless-stopped --name ${{ env.NGINX_CONTAINER }} ${{ env.MONITORING_SVC_IMAGE }}"
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker run -d -p 80:80 --network=microservices -v /home/ubuntu/app/nginx:/etc/nginx/conf.d --restart=unless-stopped --name ${{ env.NGINX_CONTAINER }} ${{ env.NGINX_CONTAINER }}"
