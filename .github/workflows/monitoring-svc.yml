@@ -1,4 +1,4 @@
-name: Build, test and push monitoring service image to dockerhub
+name: Monitoring service
 
 on:
   workflow_run:

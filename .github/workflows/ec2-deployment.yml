@@ -1,24 +1,22 @@
 name: Deploy microservices to ec2 instace
 
-# on:
-#   workflow_run:
-#     workflows: ["Build, test and push monitoring service image to dockerhub"]
-#     types:
-#       - completed
-
 on:
-  push:
-    branches: [ master ]
+  workflow_run:
+    workflows: ["Monitoring service"]
+    types:
+      - completed
 
 env:
   USER_SVC_IMAGE: microservices-user-service
   STORE_SVC_IMAGE: microservices-store-service
   MONITORING_SVC_IMAGE: microservices-monitoring-service
   API_GATEWAY_IMAGE: microservices-api-gateway
+  NGINX_IMAGE: nginx:mainline-alpine
   USER_CONTAINER: ps-user-svc
   STORE_CONTAINER: ps-store-svc
   MONITORING_CONTAINER: ps-monitoring-svc
   API_GATEWAY_CONTAINER: ps-api-gateway
+  NGINX_CONTAINER: ps-nginx
 
 jobs:
 
@@ -75,3 +73,7 @@ jobs:
       - name: start monitoring service as a docker container
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker run -d -p 3002:3002 --network=microservices --env-file ~/app/monitoring-svc/.env --name ${{ env.MONITORING_CONTAINER }} ${{ secrets.DOCKER_USERNAME }}/${{ env.MONITORING_SVC_IMAGE }}"
+
+      - name: start monitoring service as a docker container
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker run -d -p 80:80 --network=microservices -v /home/ubuntu/app/nginx:/etc/nginx/conf.d --restart=unless-stopped --name ${{ env.NGINX_CONTAINER }} ${{ env.MONITORING_SVC_IMAGE }}"
