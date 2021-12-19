@@ -1,0 +1,53 @@
+---
+# tasks file for docker
+- name: Install required system packages
+  apt:
+    name: "{{ item  }}"
+    state: latest
+    update_cache: yes
+  loop: 
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gnupg
+    - lsb-release
+    - software-properties-common
+    - python3-pip
+    - virtualenv
+    - python3-setuptools
+
+- name: Add docker GPG apt key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add docker repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu focal stable
+    state: present
+
+- name: Update apt and install docker-ce
+  apt:
+    update_cache: yes
+    name: "{{ item }}"
+    state: latest
+  loop: 
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+
+- name: Install docker module for python
+  pip:
+    name: docker
+
+- name: start docker as a daemon
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Add existing user to docker group
+  user:
+    name: ubuntu
+    groups: docker
+    append: yes  

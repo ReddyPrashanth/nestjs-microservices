@@ -1,0 +1,4 @@
+---
+# var file for postgres
+postgres_image: 'postgres:latest'
+container_name: 'ps-postgres'

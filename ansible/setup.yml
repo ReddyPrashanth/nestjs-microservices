@@ -1,0 +1,22 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: Update packages (ubuntu)
+    tags: always
+    apt:
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+- hosts: docker
+  become: true
+  roles:
+    - role: docker
+
+- hosts: postgres
+  become: true
+  roles:
+    - role: postgres
+  tags: postgres
