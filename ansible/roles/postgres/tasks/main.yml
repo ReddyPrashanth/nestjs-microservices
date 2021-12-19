@@ -1,0 +1,17 @@
+---
+
+- name: Pull postgres image
+  docker_image:
+    name: "{{ postgres_image }}"
+    source: pull
+
+- name: Start postgres container
+  docker_container:
+    name: "{{ container_name }}"
+    image: "{{ postgres_image }}"
+    env:
+        POSTGRES_PASSWORD: secret
+        POSTGRES_DB: microservices
+    state: started
+    ports:
+      - "5432:5432"

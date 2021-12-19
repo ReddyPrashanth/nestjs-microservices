@@ -1,0 +1,60 @@
+---
+
+- name: Copy nginx config to app server
+  copy:
+    src: /Users/prashanthsreepathi/Apps/nestjs/microservices/nginx
+    dest: /home/ubuntu/app
+
+- name: Create microservice folder structure
+  file:
+    dest: '/home/ubuntu/app/{{ item }}'
+    state: directory
+  with_items:
+    - api-gateway
+    - monitoring-svc
+    - store-svc
+    - user-svc
+
+- name: Copy app env files to app server
+  copy:
+    src: '/Users/prashanthsreepathi/Apps/nestjs/microservices/{{ item  }}/.env'
+    dest: '/home/ubuntu/app/{{ item }}'
+  with_items:
+    - api-gateway
+    - monitoring-svc
+    - store-svc
+    - user-svc
+
+- name: Change folder permission
+  file:
+    path: /home/ubuntu/app
+    owner: ubuntu
+    group: ubuntu
+    mode: 0775
+    state: directory
+    recurse: yes
+
+- name: Pull nginx image
+  docker_image:
+    name: 'nginx:mainline-alpine'
+    source: pull
+
+- name: Create a shared network for application
+  docker_network:
+    name: microservices
+    driver: bridge
+
+- name: Start nginx container
+  docker_container:
+    name: "ps-nginx"
+    image: "nginx:mainline-alpine"
+    env:
+        POSTGRES_PASSWORD: secret
+    state: started
+    restart_policy: unless-stopped
+    volumes:
+      - /home/ubuntu/app/nginx:/etc/nginx/conf.d
+    networks:
+      - name: microservices
+    ports:
+      - "80:80"
