@@ -74,6 +74,6 @@ jobs:
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker run -d -p 3002:3002 --network=microservices --env-file ~/app/monitoring-svc/.env --name ${{ env.MONITORING_CONTAINER }} ${{ secrets.DOCKER_USERNAME }}/${{ env.MONITORING_SVC_IMAGE }}"
 
-      - name: start monitoring service as a docker container
+      - name: start nginx as a docker container
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker run -d -p 80:80 --network=microservices -v /home/ubuntu/app/nginx:/etc/nginx/conf.d --restart=unless-stopped --name ${{ env.NGINX_CONTAINER }} ${{ env.MONITORING_SVC_IMAGE }}"

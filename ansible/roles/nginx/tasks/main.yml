@@ -5,25 +5,25 @@
     src: /Users/prashanthsreepathi/Apps/nestjs/microservices/nginx
     dest: /home/ubuntu/app
 
-- name: Create microservice folder structure
-  file:
-    dest: '/home/ubuntu/app/{{ item }}'
-    state: directory
-  with_items:
-    - api-gateway
-    - monitoring-svc
-    - store-svc
-    - user-svc
+# - name: Create microservice folder structure
+#   file:
+#     dest: '/home/ubuntu/app/{{ item }}'
+#     state: directory
+#   with_items:
+#     - api-gateway
+#     - monitoring-svc
+#     - store-svc
+#     - user-svc
 
-- name: Copy app env files to app server
-  copy:
-    src: '/Users/prashanthsreepathi/Apps/nestjs/microservices/{{ item  }}/.env'
-    dest: '/home/ubuntu/app/{{ item }}'
-  with_items:
-    - api-gateway
-    - monitoring-svc
-    - store-svc
-    - user-svc
+# - name: Copy app env files to app server
+#   copy:
+#     src: '/Users/prashanthsreepathi/Apps/nestjs/microservices/{{ item  }}/.env'
+#     dest: '/home/ubuntu/app/{{ item }}'
+#   with_items:
+#     - api-gateway
+#     - monitoring-svc
+#     - store-svc
+#     - user-svc
 
 - name: Change folder permission
   file:
