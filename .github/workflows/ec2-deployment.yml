@@ -1,10 +1,14 @@
 name: Deploy microservices to ec2 instace
 
+# on:
+#   workflow_run:
+#     workflows: ["Build, test and push monitoring service image to dockerhub"]
+#     types:
+#       - completed
+
 on:
-  workflow_run:
-    workflows: ["Build, test and push monitoring service image to dockerhub"]
-    types:
-      - completed
+  push:
+    branches: [ master ]
 
 env:
   USER_SVC_IMAGE: microservices-user-service
