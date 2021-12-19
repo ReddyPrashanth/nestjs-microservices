@@ -11,6 +11,7 @@
     image: "{{ postgres_image }}"
     env:
         POSTGRES_PASSWORD: secret
+        POSTGRES_DB: microservices
     state: started
     ports:
       - "5432:5432"
