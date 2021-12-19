@@ -44,17 +44,15 @@
     name: microservices
     driver: bridge
 
-- name: Start nginx container
-  docker_container:
-    name: "ps-nginx"
-    image: "nginx:mainline-alpine"
-    env:
-        POSTGRES_PASSWORD: secret
-    state: started
-    restart_policy: unless-stopped
-    volumes:
-      - /home/ubuntu/app/nginx:/etc/nginx/conf.d
-    networks:
-      - name: microservices
-    ports:
-      - "80:80"
+# - name: Start nginx container
+#   docker_container:
+#     name: "ps-nginx"
+#     image: "nginx:mainline-alpine"
+#     state: started
+#     restart_policy: unless-stopped
+#     volumes:
+#       - /home/ubuntu/app/nginx:/etc/nginx/conf.d
+#     networks:
+#       - name: microservices
+#     ports:
+#       - "80:80"
