@@ -65,7 +65,7 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE }}:latest
           cache-from: type=local,src=/tmp/.buildx-usr-svc-cache
-          cache-to: type=local,dest=/.buildx-usr-svc-cache-new
+          cache-to: type=local,dest=/tmp/.buildx-usr-svc-cache-new
 
       - name: Move cache
         run: |
