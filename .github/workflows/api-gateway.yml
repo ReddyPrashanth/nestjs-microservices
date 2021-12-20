@@ -1,4 +1,4 @@
-name: Build, test and push api gateway image to dockerhub
+name: Build, test and push api gateway image to dockerhub and deploy app to aws
 
 on:
   workflow_run:
@@ -7,8 +7,16 @@ on:
       - completed
 
 env:
-  IMAGE: microservices-api-gateway
-  CONTAINER: ps-api-gateway
+  USER_SVC_IMAGE: microservices-user-service
+  STORE_SVC_IMAGE: microservices-store-service
+  MONITORING_SVC_IMAGE: microservices-monitoring-service
+  API_GATEWAY_IMAGE: microservices-api-gateway
+  NGINX_IMAGE: nginx:mainline-alpine
+  USER_CONTAINER: ps-user-svc
+  STORE_CONTAINER: ps-store-svc
+  MONITORING_CONTAINER: ps-monitoring-svc
+  API_GATEWAY_CONTAINER: ps-api-gateway
+  NGINX_CONTAINER: ps-nginx
 
 jobs:
 
@@ -65,7 +73,7 @@ jobs:
           context: ./api-gateway
           file: ./api-gateway/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE }}:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ env.API_GATEWAY_IMAGE }}:latest
           cache-from: type=local,src=/tmp/.buildx-api-gateway-cache
           cache-to: type=local,dest=/tmp/.buildx-api-gateway-cache-new
 
@@ -73,3 +81,61 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-api-gateway-cache
           mv /tmp/.buildx-api-gateway-cache-new /tmp/.buildx-api-gateway-cache
+
+  deploy-to-aws:
+    name: deploy to ec2 instance
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: setup SSH connection
+        uses: webfactory/ssh-agent@v0.5.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - name: adding known hosts
+        run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: pull user service docker image
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.USER_SVC_IMAGE }}:latest"
+    
+      - name: pull store service docker image
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.STORE_SVC_IMAGE }}:latest"
+
+      - name: pull api gateway docker image
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.API_GATEWAY_IMAGE }}:latest"
+
+      - name: pull monitoring service docker image
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.MONITORING_SVC_IMAGE }}:latest"
+
+      - name: stop running container
+        continue-on-error: true
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker stop $(docker ps -a -q)"
+
+      - name: remove stopped container
+        continue-on-error: true
+        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker rm $(docker ps -a -q)"
+      
+      - name: start user service as a docker container
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker run -d -p 3000:3000 --network=microservices --env-file ~/app/user-svc/.env --name ${{ env.USER_CONTAINER }} ${{ secrets.DOCKER_USERNAME }}/${{ env.USER_SVC_IMAGE }}"
+
+      - name: start store service as a docker container
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker run -d -p 3004:3004 --network=microservices --env-file ~/app/store-svc/.env --name ${{ env.STORE_CONTAINER }} ${{ secrets.DOCKER_USERNAME }}/${{ env.STORE_SVC_IMAGE }}"
+
+      - name: start api gateway as a docker container
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker run -d -p 3001:3001 --network=microservices --env-file ~/app/api-gateway/.env --name ${{ env.API_GATEWAY_CONTAINER }} ${{ secrets.DOCKER_USERNAME }}/${{ env.API_GATEWAY_IMAGE }}"
+
+      - name: start monitoring service as a docker container
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker run -d -p 3002:3002 --network=microservices --env-file ~/app/monitoring-svc/.env --name ${{ env.MONITORING_CONTAINER }} ${{ secrets.DOCKER_USERNAME }}/${{ env.MONITORING_SVC_IMAGE }}"
+
+      - name: start nginx as a docker container
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker run -d -p 80:80 --network=microservices -v /home/ubuntu/app/nginx:/etc/nginx/conf.d --restart=unless-stopped --name ${{ env.NGINX_CONTAINER }} ${{ env.NGINX_CONTAINER }}"
