@@ -17,8 +17,8 @@
 
 - name: Copy app env files to app server
   copy:
-    src: '/Users/prashanthsreepathi/Apps/nestjs/microservices/{{ item  }}/.env'
-    dest: '/home/ubuntu/app/{{ item }}'
+    src: '/Users/prashanthsreepathi/Apps/nestjs/microservices/{{ item  }}/.docker.env'
+    dest: '/home/ubuntu/app/{{ item }}/.env'
   with_items:
     - api-gateway
     - monitoring-svc

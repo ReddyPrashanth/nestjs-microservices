@@ -1,5 +1,4 @@
 name: Monitoring service
-
 on:
   workflow_run:
     workflows: ["Build, test and push api gateway image to dockerhub"]
