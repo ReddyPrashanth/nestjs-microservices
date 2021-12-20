@@ -46,6 +46,12 @@ jobs:
     
       - name: set up docker build
         uses: docker/setup-buildx-action@v1
+
+      - name: Cache docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-store-svc-cache
+          key: ${{ runner.os }}-store-svc-buildx
       
       - name: login to dockerhub
         uses: docker/login-action@v1
@@ -60,3 +66,10 @@ jobs:
           file: ./store-svc/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE }}:latest
+          cache-from: type=local,src=/tmp/.buildx-store-svc-cache
+          cache-to: type=local,dest=/.buildx-store-svc-cache-new
+      
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-store-svc-cache
+          mv /tmp/.buildx-store-svc-cache-new /tmp/.buildx-store-svc-cache
