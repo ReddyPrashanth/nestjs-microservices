@@ -6,7 +6,6 @@ on:
 
 env:
   IMAGE: microservices-user-service
-  CONTAINER: ps-user-svc
 
 jobs:
 

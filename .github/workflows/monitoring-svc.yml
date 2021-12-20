@@ -7,7 +7,6 @@ on:
 
 env:
   IMAGE: microservices-monitoring-service
-  CONTAINER: ps-monitoring-svc
 
 jobs:
 
