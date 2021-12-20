@@ -19,10 +19,9 @@ env:
   NGINX_CONTAINER: ps-nginx
 
 jobs:
-
   deploy-to-aws:
-    runs-on: ubuntu-latest
     name: deploy to ec2 instance
+    runs-on: ubuntu-latest
 
     steps:
       - name: setup SSH connection
