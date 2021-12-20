@@ -84,6 +84,7 @@ jobs:
   deploy-to-aws:
     name: deploy to ec2 instance
     runs-on: ubuntu-latest
+    needs: [push-to-docker-hub]
 
     steps:
       - name: setup SSH connection
