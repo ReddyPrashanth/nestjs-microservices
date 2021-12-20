@@ -110,10 +110,10 @@ jobs:
       - name: stop running container
         continue-on-error: true
         run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker stop $(docker ps -a -q)"
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker stop ${{'$(docker ps -a -q)'}}"
       - name: remove stopped container
         continue-on-error: true
-        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker rm $(docker ps -a -q)"
+        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker ${{'$(docker ps -a -q)'}}"
       
       - name: start user service as a docker container
         run: |
