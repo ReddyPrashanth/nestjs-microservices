@@ -1,4 +1,4 @@
-name: Build, test and push api gateway image to dockerhub
+name: Build, test and push api gateway image to dockerhub and deploy app to aws
 
 on:
   workflow_run:
