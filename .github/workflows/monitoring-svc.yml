@@ -111,10 +111,10 @@ jobs:
       - name: stop running container
         continue-on-error: true
         run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker stop ${{'$(docker ps -a -q)'}}"
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker stop ${{ env.API_GATEWAY_CONTAINER}} ${{ env.USER_CONTAINER }} ${{ env.STORE_CONTAINER }} ${{ env.MONITORING_CONTAINER}} ${{ env.NGINX_CONTAINER }}"
       - name: remove stopped container
         continue-on-error: true
-        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker ${{'$(docker ps -a -q)'}}"
+        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker rm ${{ env.API_GATEWAY_CONTAINER}} ${{ env.USER_CONTAINER }} ${{ env.STORE_CONTAINER }} ${{ env.MONITORING_CONTAINER}} ${{ env.NGINX_CONTAINER }}"
       
       - name: start user service as a docker container
         run: |
