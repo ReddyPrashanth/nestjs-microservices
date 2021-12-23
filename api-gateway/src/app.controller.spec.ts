@@ -17,7 +17,7 @@ describe('AppController', () => {
   describe('root', () => {
     it('should return "Hello World!"', () => {
       expect(appController.getHello()).toEqual({
-        message: 'Hello world! Welcome to mail microservice',
+        message: 'Hello world! Welcome to microservices api gateway',
       });
     });
   });
