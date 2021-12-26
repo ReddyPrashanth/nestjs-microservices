@@ -1,13 +1,8 @@
 import { PostgresErrorCode } from './../database/postgres-error-code.enum';
 import { ServiceDto } from './dtos/monitoring.dto';
 import { ConfigService } from '@nestjs/config';
-import {
-  BadRequestException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
-import { RmqOptions, Transport } from '@nestjs/microservices';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { RmqOptions, RpcException, Transport } from '@nestjs/microservices';
 import {
   HealthCheckService,
   HttpHealthIndicator,
@@ -55,17 +50,19 @@ export class HealthService {
   async createService(dto: ServiceDto) {
     try {
       const service = this.repository.create(dto);
-      const { id, name, description } = await service.save();
-      return { id, name, description };
+      const { id, name, description, status } = await service.save();
+      return { id, name, description, status };
     } catch (error) {
       if (error?.code === PostgresErrorCode.UNIQUE_KEY_VIOLATION) {
-        throw new BadRequestException(`Service ${dto.name} is already taken`);
+        throw new RpcException({
+          message: `Service ${dto.name} is already taken`,
+          status: HttpStatus.BAD_REQUEST,
+        });
       }
-      console.log(error);
-      throw new HttpException(
-        'Something went wrong',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new RpcException({
+        message: 'Something went wrong',
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+      });
     }
   }
 }

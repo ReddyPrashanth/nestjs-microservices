@@ -1,7 +1,5 @@
-export class ServiceDto {
+export class ProductSizeDto {
   name: string;
 
   description: string;
-
-  url: string;
 }

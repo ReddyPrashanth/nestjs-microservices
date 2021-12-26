@@ -13,10 +13,14 @@ export class UsersService {
   ) {}
 
   async createUser(user: UserDto) {
-    const { id, email } = await this.repository.createUser(user);
+    const { id, email, firstName, lastName } = await this.repository.createUser(
+      user,
+    );
     return {
       id,
       email,
+      firstName,
+      lastName,
     };
   }
 

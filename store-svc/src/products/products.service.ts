@@ -1,18 +1,22 @@
 import { getUniqueViolationKey } from 'src/utils/database.utils';
 import { PostgresErrorCode } from './../database/postgres-error-code.enum';
-import { ProductDto } from './dtos/product.dto';
+import { ProductDto, UpdateProductDto } from './dtos/product.dto';
 import { PaginatedQueryDto } from './../dtos/base.dto';
-import { ProductEntity } from './entities/product.entity';
+import { ProductEntity, ProductSizeEntity } from './entities/product.entity';
 import { Repository } from 'typeorm';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RpcException } from '@nestjs/microservices';
+import { ProductsizesService } from 'src/productsizes/productsizes.service';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(ProductEntity)
     private readonly repository: Repository<ProductEntity>,
+    @InjectRepository(ProductSizeEntity)
+    private readonly productSizeRepository: Repository<ProductSizeEntity>,
+    private readonly productSizeService: ProductsizesService,
   ) {}
 
   async find(query: PaginatedQueryDto) {
@@ -39,9 +43,37 @@ export class ProductsService {
   }
 
   async createProducts(products: ProductDto[]) {
-    const entities = this.repository.create(products);
+    const sizes = await this.productSizeService.find();
+    const entities = this.repository.create(products).map((p) => {
+      p.sizes = sizes;
+      return p;
+    });
     try {
       return await this.repository.save(entities);
+    } catch (error) {
+      if (error?.code === PostgresErrorCode.UNIQUE_KEY_VIOLATION) {
+        const value = getUniqueViolationKey(error?.detail as string);
+        throw new RpcException({
+          status: HttpStatus.BAD_REQUEST,
+          message: `product ${value} is taken`,
+        });
+      }
+      if (error?.code === PostgresErrorCode.FOREIGN_KEY_VIOLATION)
+        throw new RpcException({
+          status: HttpStatus.BAD_REQUEST,
+          message: error?.detail,
+        });
+      throw new RpcException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Something went wrong',
+      });
+    }
+  }
+
+  async updateproduct(dto: UpdateProductDto) {
+    try {
+      await this.repository.update(dto.id, dto.product);
+      return dto;
     } catch (error) {
       if (error?.code === PostgresErrorCode.UNIQUE_KEY_VIOLATION) {
         const value = getUniqueViolationKey(error?.detail as string);
@@ -69,5 +101,34 @@ export class ProductsService {
       status: HttpStatus.NOT_FOUND,
       message: `Product with id ${id} not found`,
     });
+  }
+
+  async attachSizes(productId: number, sizes: number[]) {
+    const entities = sizes.map((sid) => {
+      return {
+        productsId: productId,
+        sizesid: sid,
+      };
+    });
+    try {
+      const { identifiers } = await this.productSizeRepository
+        .createQueryBuilder()
+        .insert()
+        .into(ProductSizeEntity)
+        .values(entities)
+        .orIgnore()
+        .execute();
+      return identifiers;
+    } catch (error) {
+      if (error?.code === PostgresErrorCode.FOREIGN_KEY_VIOLATION)
+        throw new RpcException({
+          status: HttpStatus.BAD_REQUEST,
+          message: error?.detail,
+        });
+      throw new RpcException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Something went wrong. Failed to attach sizes',
+      });
+    }
   }
 }

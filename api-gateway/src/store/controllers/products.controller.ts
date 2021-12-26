@@ -1,4 +1,4 @@
-import { CreateProductsDto } from './../dtos/product.dto';
+import { CreateProductsDto, ProductDto } from './../dtos/product.dto';
 import { TransformInterceptor } from './../../interceptors/transform.interceptor';
 import { PaginatedQueryDto } from './../../dtos/base.dto';
 import {
@@ -9,6 +9,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
   UseInterceptors,
 } from '@nestjs/common';
@@ -32,6 +33,14 @@ export class ProductsController {
   @Post()
   createProducts(@Body() dto: CreateProductsDto) {
     return this.service.createProducts(dto);
+  }
+
+  @Put(':id')
+  updateproduct(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: ProductDto,
+  ) {
+    return this.service.updateProduct(id, dto);
   }
 
   @Delete(':id')

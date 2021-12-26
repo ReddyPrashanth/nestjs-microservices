@@ -1,10 +1,14 @@
+import { SizeEntity } from './../../productsizes/entities/productsize.entity';
 import { SubCategoryEntity } from './../../subcategories/entities/subcategory.entity';
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
+  PrimaryColumn,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn,
@@ -39,6 +43,20 @@ export class ProductEntity extends BaseEntity {
 
   @ManyToOne(() => SubCategoryEntity, (subCategory) => subCategory.products, {
     onDelete: 'CASCADE',
+    eager: true,
   })
   subCategory: SubCategoryEntity;
+
+  @ManyToMany(() => SizeEntity, { eager: true })
+  @JoinTable()
+  sizes: SizeEntity[];
+}
+
+@Entity({ name: 'products_sizes_sizes' })
+export class ProductSizeEntity extends BaseEntity {
+  @PrimaryColumn({ type: 'int' })
+  productsId: number;
+
+  @PrimaryColumn({ type: 'int' })
+  sizesId: number;
 }

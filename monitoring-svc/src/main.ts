@@ -1,16 +1,19 @@
-import { ValidationPipe } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
-  app.enableCors({
-    origin: 'http://127.0.0.1:8080',
-    credentials: true,
-  });
-  const configService = app.get<ConfigService>(ConfigService);
-  await app.listen(configService.get('APP_PORT', 3002));
+  const port = process.env.PORT ? Number(process.env.PORT) : 3002;
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    AppModule,
+    {
+      transport: Transport.TCP,
+      options: {
+        host: '0.0.0.0',
+        port,
+      },
+    },
+  );
+  await app.listen();
 }
 bootstrap();

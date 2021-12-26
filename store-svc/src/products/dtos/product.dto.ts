@@ -13,3 +13,15 @@ export class ProductDto {
 export class CreateProductsDto {
   products: ProductDto[];
 }
+
+export class UpdateProductDto {
+  id: number;
+
+  product: ProductDto;
+}
+
+export class AttachSizesDto {
+  productId: number;
+
+  sizesId: number[];
+}
