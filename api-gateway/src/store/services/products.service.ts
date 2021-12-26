@@ -1,4 +1,4 @@
-import { CreateProductsDto } from './../dtos/product.dto';
+import { CreateProductsDto, ProductDto } from './../dtos/product.dto';
 import { catchError } from 'rxjs';
 import {
   PaginatedQueryDto,
@@ -29,6 +29,16 @@ export class productsService {
         throw new HttpException(err.message, err.status);
       }),
     );
+  }
+
+  updateProduct(id: number, dto: ProductDto) {
+    return this.client
+      .send({ cmd: 'update_product' }, { id, product: dto })
+      .pipe(
+        catchError((err: RpcExceptionResponseDto) => {
+          throw new HttpException(err.message, err.status);
+        }),
+      );
   }
 
   deleteProduct(id: number) {

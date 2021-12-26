@@ -1,4 +1,8 @@
-import { CreateProductsDto } from './dtos/product.dto';
+import {
+  CreateProductsDto,
+  AttachSizesDto,
+  UpdateProductDto,
+} from './dtos/product.dto';
 import { PaginatedQueryDto } from './../dtos/base.dto';
 import { ProductsService } from './products.service';
 import { Controller } from '@nestjs/common';
@@ -23,8 +27,18 @@ export class ProductsController {
     return await this.service.createProducts(dto.products);
   }
 
+  @MessagePattern({ cmd: 'update_product' })
+  async updateProduct(@Payload() dto: UpdateProductDto) {
+    return await this.service.updateproduct(dto);
+  }
+
   @MessagePattern({ cmd: 'delete_product' })
   async delete(@Payload() id: number) {
     return await this.service.deleteProduct(id);
+  }
+
+  @MessagePattern({ cmd: 'attach_sizes' })
+  async attachSizes(@Payload() dto: AttachSizesDto) {
+    return await this.service.attachSizes(dto.productId, dto.sizesId);
   }
 }

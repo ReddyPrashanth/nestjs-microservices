@@ -31,3 +31,8 @@ export class CreateProductsDto {
   @Type(() => ProductDto)
   products: ProductDto[];
 }
+
+export class AttachSizesDto {
+  @IsNumber({}, { each: true })
+  sizes: number[];
+}

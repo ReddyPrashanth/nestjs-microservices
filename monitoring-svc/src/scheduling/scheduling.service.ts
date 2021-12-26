@@ -8,7 +8,7 @@ export class SchedulingService {
 
   constructor(private readonly healthService: HealthService) {}
 
-  @Cron(CronExpression.EVERY_10_MINUTES)
+  // @Cron(CronExpression.EVERY_10_MINUTES)
   async monitorServices() {
     let healthCheck;
     const services = await this.healthService.healthCheck();
